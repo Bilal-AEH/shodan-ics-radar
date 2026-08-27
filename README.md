@@ -67,3 +67,14 @@ Le score final va de 0 à 10. Quatre niveaux : FAIBLE, MOYEN, ÉLEVÉ, CRITIQUE.
 | Langage | Python 3.11 |
 | API | Shodan (plan académique) |
 | Dépendances | `shodan` · `pyyaml` · `jinja2` |
+
+
+---
+
+## Prerequis -- Plan Shodan
+
+Ce script utilise shodan.search(), disponible uniquement sur les plans Membership (49 USD/an minimum).
+
+**Avec un compte Free**, le script se connecte, tente les 5 protocoles, gere chaque erreur 403 Forbidden sans crasher, et affiche un message final explicite -- comportement confirme lors des tests.
+
+Voir GLOSSAIRE.md pour les definitions de tous les termes techniques.
