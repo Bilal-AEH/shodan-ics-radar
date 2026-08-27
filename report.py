@@ -25,7 +25,7 @@ def generate_report(all_results: list, config: dict) -> str:
     honeypots = [r for r in all_results if r.get("honeypot")]
 
     # Top 10 pays par nombre d'équipements exposés
-    countries = Counter(r["country"] for r in all_results)
+    countries = Counter(r["country_code"] for r in all_results)
     top_countries = countries.most_common(10)
 
     # Répartition par protocole
