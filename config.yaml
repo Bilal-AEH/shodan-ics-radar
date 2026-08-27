@@ -1,0 +1,52 @@
+shodan:
+  # La clé API est lue depuis la variable d'environnement SHODAN_API_KEY.
+  # Ne jamais écrire une clé en dur dans ce fichier — il est versionné.
+  api_key: "${SHODAN_API_KEY}"
+
+protocols:
+  - name: Modbus
+    port: 502
+    query: "port:502 Modbus"
+    risk_base: 8
+    description: "Protocole industriel sans authentification, exposé depuis 1979"
+
+  - name: Siemens S7
+    port: 102
+    query: "port:102 Siemens"
+    risk_base: 9
+    description: "Automates Siemens — exposent modèle et firmware sans authentification"
+
+  - name: BACnet
+    port: 47808
+    query: "port:47808"
+    risk_base: 6
+    description: "Gestion technique du bâtiment — impact variable selon le site"
+
+  - name: DNP3
+    port: 20000
+    query: "port:20000 DNP3"
+    risk_base: 9
+    description: "Infrastructures critiques : distribution électrique, eau, gaz"
+
+  - name: EtherNet/IP
+    port: 44818
+    query: "port:44818"
+    risk_base: 7
+    description: "Allen-Bradley / Rockwell — automation industrielle"
+
+scoring:
+  thresholds:
+    critique: 8.0
+    eleve: 6.0
+    moyen: 4.0
+  # Poids de la durée d'exposition dans le score final (bonus max : +2 pts)
+  exposure_weight: 0.3
+  # Réduction si SSL/TLS détecté — rare sur les équipements ICS, mais possible
+  ssl_discount: 1.5
+  # Réduction si signatures honeypot détectées dans la banner
+  honeypot_discount: 3.0
+
+output:
+  rapport_path: "rapport_ics.md"
+  # Nombre max de résultats par protocole — adapté au plan académique Shodan
+  max_results_per_protocol: 50
