@@ -1,0 +1,90 @@
+# Rapport ICS Radar — {{ generated_at }}
+
+## Résumé exécutif
+
+| Indicateur              | Valeur |
+|-------------------------|--------|
+| Équipements analysés    | {{ total }} |
+| Niveau CRITIQUE         | {{ critiques | length }} |
+| Niveau ÉLEVÉ            | {{ eleves | length }} |
+| Honeypots détectés      | {{ honeypots | length }} |
+| Protocoles couverts     | {{ protocols | length }} |
+
+**Répartition par protocole**
+
+{% for protocol, count in protocols.items() %}
+- {{ protocol }} : {{ count }} équipements
+{% endfor %}
+
+**Top pays d'exposition**
+
+{% for country, count in top_countries %}
+- {{ country }} : {{ count }}
+{% endfor %}
+
+---
+
+## Équipements CRITIQUE
+
+{% if critiques %}
+{% for eq in critiques %}
+### {{ eq.org }} — Score {{ eq.score }}
+
+| Champ        | Valeur                    |
+|--------------|---------------------------|
+| Protocole    | {{ eq.protocol }}         |
+| Pays         | {{ eq.country_code }}     |
+| Organisation | {{ eq.org }}              |
+| Exposition   | {% if eq.exposure_days %}{{ eq.exposure_days }} jours{% else %}Inconnue{% endif %} |
+| CVE          | {% if eq.vulns %}{{ eq.vulns | join(', ') }}{% else %}Aucune référencée{% endif %} |
+| Honeypot     | {% if eq.honeypot %}Oui (probable leurre){% else %}Non{% endif %} |
+| SSL          | {% if eq.ssl %}Oui{% else %}Non{% endif %} |
+
+**Décomposition du score**
+- Base protocole : {{ eq.risk_base }}
+- Bonus exposition : +{{ eq.exposure_bonus }}
+- Bonus CVE : +{{ eq.cve_bonus }}
+- Réduction SSL : -{{ eq.ssl_discount }}
+- Réduction honeypot : -{{ eq.honeypot_discount }}
+- **Score final : {{ eq.score }} / 10 — {{ eq.level }}**
+
+---
+{% endfor %}
+{% else %}
+Aucun équipement de niveau CRITIQUE détecté dans cette analyse.
+{% endif %}
+
+## Équipements ÉLEVÉ
+
+{% if eleves %}
+| Organisation | Protocole | Pays | Score | Exposition | CVE |
+|---|---|---|---|---|---|
+{% for eq in eleves %}
+| {{ eq.org }} | {{ eq.protocol }} | {{ eq.country_code }} | {{ eq.score }} | {% if eq.exposure_days %}{{ eq.exposure_days }}j{% else %}?{% endif %} | {{ eq.vulns | length }} |
+{% endfor %}
+{% else %}
+Aucun équipement de niveau ÉLEVÉ détecté.
+{% endif %}
+
+---
+
+## Honeypots identifiés
+
+{% if honeypots %}
+{{ honeypots | length }} équipement(s) présentent des signatures de honeypots industriels (Conpot et dérivés).
+Ces équipements sont documentés ici mais exclus de la priorisation opérationnelle.
+Leur présence indique que le segment réseau est activement sondé par des acteurs automatisés.
+
+| Organisation | Protocole | Pays | Score (mitigé) |
+|---|---|---|---|
+{% for eq in honeypots %}
+| {{ eq.org }} | {{ eq.protocol }} | {{ eq.country_code }} | {{ eq.score }} |
+{% endfor %}
+{% else %}
+Aucun honeypot identifié dans cette analyse.
+{% endif %}
+
+---
+
+*Rapport généré automatiquement par Shodan ICS Radar.*
+*Les adresses IP et identifiants précis ont été masqués dans ce document.*
